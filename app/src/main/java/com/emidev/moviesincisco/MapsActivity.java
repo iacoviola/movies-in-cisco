@@ -17,12 +17,14 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -72,6 +74,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean multiple = false;
     //Counts the number of movies in the same location
     private int count = 1;
+    //Saves the style of the map
+    //true = dark
+    //false = light
+    private boolean mapStyle = false;
 
     //Set up map clusterer
     private void setUpClusterer() {
@@ -258,6 +264,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         //Changing the map style to remove useless elements
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.light_style));
+
+        ImageButton switchMap = findViewById(R.id.switchButton);
+        switchMap.setColorFilter(getResources().getColor(R.color.holo_red_light));
         //Creating bounds for the map, to lock the camera
         //Over the bay area
         LatLngBounds sanFrancisco = new LatLngBounds(new LatLng(37.1398299, -122.873825), new LatLng(38.4298239, -121.98178));
@@ -472,6 +481,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
                 previousZoom = cameraPosition.zoom;
+            }
+        });
+
+        switchMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!mapStyle) {
+                    mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getApplicationContext(), R.raw.dark_style));
+                    switchMap.setColorFilter(getResources().getColor(R.color.holo_red_dark));
+                    mapStyle = true;
+                }
+                else {
+                    mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getApplicationContext(), R.raw.light_style));
+                    switchMap.setColorFilter(getResources().getColor(R.color.holo_red_light));
+                    mapStyle = false;
+                }
             }
         });
     }
