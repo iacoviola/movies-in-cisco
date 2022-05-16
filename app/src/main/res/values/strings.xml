@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Movies In Cisco</string>
+    <string name="of">&#160;of:&#160;</string>
+    <string name="loaded">0</string>
+    <string name="loaded_location">Loaded location:&#160;</string>
+    <string name="locations_lost">Locations lost:&#160;</string>
+    <string name="onetime">This is a one time process.</string>
+    <string name="wait">Please, wait.</string>
+    <string name="times">%d X</string>
+</resources>

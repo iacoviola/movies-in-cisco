@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MapsActivity">
+
+    <RelativeLayout
+        android:id="@+id/loadingRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:translationZ="90dp">
+
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/loadingGifImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/goldengate" />
+
+        <ImageView
+            android:id="@+id/loadingImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="300dp"
+            android:src="@drawable/cisco"
+            android:translationZ="45dp" />
+
+        <LinearLayout
+            android:id="@+id/oneTimeLinearLayout"
+            android:layout_marginTop="360dp"
+            android:layout_alignTop="@+id/loadingImageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/onetime"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:shadowColor="@color/black"
+                android:shadowRadius="2"
+                android:shadowDx="1"
+                android:shadowDy="1"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wait"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:shadowColor="@color/black"
+                android:shadowRadius="2"
+                android:shadowDx="1"
+                android:shadowDy="1"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_alignTop="@+id/oneTimeLinearLayout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/loaded_location"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:shadowColor="@color/black"
+                android:shadowRadius="2"
+                android:shadowDx="1"
+                android:shadowDy="1" />
+
+            <TextView
+                android:id="@+id/loadedTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/loaded"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:shadowColor="@color/black"
+                android:shadowRadius="2"
+                android:shadowDx="1"
+                android:shadowDy="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/of"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:shadowColor="@color/black"
+                android:shadowRadius="2"
+                android:shadowDx="1"
+                android:shadowDy="1" />
+
+            <TextView
+                android:id="@+id/totalTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:shadowColor="@color/black"
+                android:shadowRadius="2"
+                android:shadowDx="1"
+                android:shadowDy="1" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar2"
+            android:layout_marginTop="30dp"
+            android:layout_marginHorizontal="50dp"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/linearLayout"
+            android:shadowColor="@color/black"
+            android:shadowRadius="2"
+            android:shadowDx="1"
+            android:shadowDy="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_alignTop="@+id/progressBar2">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/locations_lost"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:shadowColor="@color/black"
+                android:shadowRadius="2"
+                android:shadowDx="1"
+                android:shadowDy="1" />
+
+            <TextView
+                android:id="@+id/lost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/loaded"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:shadowColor="@color/black"
+                android:shadowRadius="2"
+                android:shadowDx="1"
+                android:shadowDy="1" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/ciscoLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        android:src="@drawable/cisco"
+        android:translationZ="45dp"/>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</RelativeLayout>
