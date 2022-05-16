@@ -44,7 +44,7 @@ public class Locator {
         int status;
 
         try {
-            server = new URL(urlTMDBCredits + URLEncoder.encode(String.valueOf(id), "UTF-8") + "/credits?api_key" + BuildConfig.TMDBKEY);
+            server = new URL(urlTMDBCredits + URLEncoder.encode(String.valueOf(id), "UTF-8") + "/credits?api_key=" + BuildConfig.TMDBKEY);
             service = (HttpsURLConnection) server.openConnection();
             service.setRequestProperty("Host", "api.themoviedb.org");
             service.setRequestProperty("Accept", "application/json");
@@ -71,7 +71,7 @@ public class Locator {
         int status;
 
         try {
-            server = new URL(urlTMDBtv + URLEncoder.encode(movie.getTitle(), "UTF-8") + "&api_key" + BuildConfig.TMDBKEY);
+            server = new URL(urlTMDBtv + URLEncoder.encode(movie.getTitle(), "UTF-8") + "&api_key=" + BuildConfig.TMDBKEY);
             service = (HttpsURLConnection) server.openConnection();
             service.setRequestProperty("Host", "api.themoviedb.org");
             service.setRequestProperty("Accept", "application/json");
@@ -98,7 +98,7 @@ public class Locator {
         int status;
 
         try {
-            server = new URL(urlTMDBFile + URLEncoder.encode(movie.getTitle(), "UTF-8") + "&api_key" + BuildConfig.TMDBKEY);
+            server = new URL(urlTMDBFile + URLEncoder.encode(movie.getTitle(), "UTF-8") + "&api_key=" + BuildConfig.TMDBKEY);
             service = (HttpsURLConnection) server.openConnection();
             service.setRequestProperty("Host", "api.themoviedb.org");
             service.setRequestProperty("Accept", "application/json");
@@ -126,7 +126,7 @@ public class Locator {
 
         for(; beginPos < endPos; beginPos++) {
             try {
-                server = new URL(urlConverter + URLEncoder.encode(movies.get(beginPos).getLocation() + ", San Francisco, California, USA", "UTF-8") + BuildConfig.MAPSKEY);
+                server = new URL(urlConverter + URLEncoder.encode(movies.get(beginPos).getLocation() + ", San Francisco, California, USA", "UTF-8") + "&key=" + BuildConfig.MAPSKEY);
                 service = (HttpsURLConnection) server.openConnection();
                 service.setRequestProperty("Host", "maps.googleapis.com");
                 service.setRequestProperty("Accept", "application/json");
