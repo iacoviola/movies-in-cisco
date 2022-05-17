@@ -11,8 +11,7 @@ https://data.sfgov.org/Culture-and-Recreation/Film-Locations-in-San-Francisco/yi
 
 Starting from this data set which contains, amongst other informations; the location in which a scene of a certain movie was filmed.
 The location is not indicated as coordinates but just as an address.
-
-<img src="https://user-images.githubusercontent.com/26089090/168681842-10b88641-e0cc-4c97-89bc-796e2ef69f2b.jpg" width="30%" height="30%">
+![loading_screen](https://user-images.githubusercontent.com/26089090/168681842-10b88641-e0cc-4c97-89bc-796e2ef69f2b.jpg)
 
 ### STEP TWO
 This forced me to convert every address for every entry in the data set to coordinates using Google's geocoding API:
@@ -24,18 +23,17 @@ The problem with this particular API is that it is restricted to a maximum numbe
 ### STEP THREE
 The converted locations are then saved in a local database, to get around the conversion effort every time the app is restarted, and shown on the map as clusters, for performance related reasons. 
 
-<img src="https://user-images.githubusercontent.com/26089090/168682086-9c8d9b2e-9b99-4e3b-b907-1d7ac85fd731.jpg" width="30%" height="30%">
+![home_screen](https://user-images.githubusercontent.com/26089090/168682086-9c8d9b2e-9b99-4e3b-b907-1d7ac85fd731.jpg)
 
-<img src="https://user-images.githubusercontent.com/26089090/168681958-5aa21890-92f6-4c41-afb5-e2fe8cc41eef.jpg" width="30%" height="30%">
+![clusters](https://user-images.githubusercontent.com/26089090/168681958-5aa21890-92f6-4c41-afb5-e2fe8cc41eef.jpg)
 
 Once a user zooms in, the clusters divide in smaller clusters eventually revealing a marker which can be clicked to show the movie filmed in that location and its poster.
 
-<img src="https://user-images.githubusercontent.com/26089090/168681990-fe52d9c0-40b3-4706-97f5-de7c7e45391f.jpg" width="30%" height="30%">
+![movie_window](https://user-images.githubusercontent.com/26089090/168681990-fe52d9c0-40b3-4706-97f5-de7c7e45391f.jpg)
 
 If multiple movies where filmed in the same location a cluster will be available to click generating a popup window showing all the different movies.
 
-
-<img src="https://user-images.githubusercontent.com/26089090/168682002-075d5b65-39e3-4065-899d-73957aac2de6.jpg" width="30%" height="30%">
+![cluster_window](https://user-images.githubusercontent.com/26089090/168682002-075d5b65-39e3-4065-899d-73957aac2de6.jpg)
 
 ### STEP FOUR
 The application is able to load posters for most of the movies thanks to the TMDB API:
