@@ -4,6 +4,7 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.room.Room;
 
@@ -23,6 +24,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -102,6 +104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void addItems() {
         //Add cluster items in close proximity
+        clusterManager.clearItems();
         for(int i = 0; i < movies.size(); i++) {
             MovieLocation current = movies.get(i);
             Log.d("Movies", current.getTitle());
@@ -133,6 +136,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         isFading = false;
                     }
                 });
+    }
+
+    //function to search markers
+    private void searchMarkers(String query) {
+        //Clear the map
+        clusterManager.clearItems();
+        //Add the items that match the query
+        for(int i = 0; i < movies.size(); i++) {
+            MovieLocation current = movies.get(i);
+            if(current.getTitle().toLowerCase().contains(query.toLowerCase())) {
+                clusterManager.addItem(current);
+            }
+        }
+        //Update the map
+        clusterManager.cluster();
     }
 
     @Override
@@ -299,6 +317,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Setting up the map clusterer
         setUpClusterer();
+
+        SearchView searchView = findViewById(R.id.searchView);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchMarkers(query);
+                searchView.clearFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                Objects.requireNonNull(imm).hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                if(s.length() > 0) {
+                    searchMarkers(s);
+                    return true;
+                } else {
+                    Log.d("Search", "Clearing markers");
+                    addItems();
+                    return false;
+                }
+            }
+
+        });
 
         //Setting a custom adapter to show a window when a marker is clicked for every marker
         clusterManager.getMarkerCollection().setInfoWindowAdapter(new MovieInfoViewAdapter(LayoutInflater.from(this), this, renderer));

@@ -175,10 +175,24 @@
 
     <ImageView
         android:id="@+id/ciscoLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="300dp"
-        android:src="@drawable/cisco"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/cisco_title"
         android:translationZ="45dp"/>
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        map:queryHint="Search for a movie"
+        android:layout_marginTop="60dp"
+        android:translationZ="46dp"
+        map:searchIcon="@drawable/ic_baseline_search_24"
+        android:layout_marginHorizontal="20dp"
+        map:iconifiedByDefault="false"
+        android:background="@drawable/search_bar_background"/>
 
     <ImageButton
         android:id="@+id/switchButton"

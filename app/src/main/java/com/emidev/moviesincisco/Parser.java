@@ -22,6 +22,16 @@ public class Parser {
     private final static Semaphore mutex = new Semaphore(1);
     private final static Locator locator = new Locator();
 
+    private static String trimDash(String str) {
+        if(str.charAt(0) == '-') {
+            str = str.substring(1);
+        }
+        if(str.charAt(str.length() - 1) == '-') {
+            str = str.substring(0, str.length() - 1);
+        }
+        return str;
+    }
+
     public static boolean parseCredits(InputStreamReader file, MovieLocation movie) throws ParseException, JSONException, IOException {
         String path = null;
 
@@ -149,7 +159,8 @@ public class Parser {
         for (int i = 0; i < doc.size(); i++) {
             JSONObject movie = (JSONObject) doc.get(i);
             MovieLocation m = new MovieLocation();
-            m.setTitle(((String) movie.get("title")).split("Season")[0].trim());
+            m.setTitle(trimDash(((String) movie.get("title")).split("Season")[0].trim()));
+
             if(movie.get("locations") != null) {
                 Log.d("LocationOfJSONFile", (String) movie.get("locations"));
                 m.setLocation((String) movie.get("locations"));
