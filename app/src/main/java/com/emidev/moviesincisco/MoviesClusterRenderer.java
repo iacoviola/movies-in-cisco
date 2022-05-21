@@ -11,6 +11,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
@@ -38,6 +39,12 @@ public class MoviesClusterRenderer extends DefaultClusterRenderer<MovieLocation>
         vectorDrawable.draw(canvas);
         //Return the bitmap.
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    @Override
+    protected boolean shouldRenderAsCluster(Cluster<MovieLocation> cluster) {
+        //start clustering if at least 2 items overlap
+        return cluster.getSize() > 1;
     }
 
     @Override

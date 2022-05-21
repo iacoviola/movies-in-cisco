@@ -17,12 +17,12 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -41,6 +41,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
@@ -79,13 +80,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //false = light
     private boolean mapStyle = false;
 
+    private MoviesClusterRenderer renderer;
+
+    private String path;
+
+    private boolean isDismissed = false;
+
+    PopupWindow popupWindow;
+
     //Set up map clusterer
     private void setUpClusterer() {
         clusterManager = new MovieClusterManager<>(this, mMap);
         clusterManager.setAnimation(false);
         //Point the map's listeners at the listeners implemented by the cluster manager.
         mMap.setOnCameraIdleListener(clusterManager);
-        clusterManager.setRenderer(new MoviesClusterRenderer(this, mMap, clusterManager));
+        renderer = new MoviesClusterRenderer(this, mMap, clusterManager);
+        clusterManager.setRenderer(renderer);
 
         addItems();
     }
@@ -233,7 +243,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void run() {
                     //Get the movies from the database
-                    movies = new ArrayList<MovieLocation>(query.getAll());
+                    movies = new ArrayList<>(query.getAll());
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -290,14 +300,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Setting up the map clusterer
         setUpClusterer();
 
-        //ClickListener to handle the click of a marker on the map
-        mMap.setOnMarkerClickListener(clusterManager);
-
         //Setting a custom adapter to show a window when a marker is clicked for every marker
-        clusterManager.getMarkerCollection().setInfoWindowAdapter(new MovieInfoViewAdapter(LayoutInflater.from(this), clusterManager));
+        clusterManager.getMarkerCollection().setInfoWindowAdapter(new MovieInfoViewAdapter(LayoutInflater.from(this), this, renderer));
 
-        //Setting the custom adapter to the map as well
-        mMap.setInfoWindowAdapter(clusterManager.getMarkerManager());
+        clusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MovieLocation>() {
+            @Override
+            public boolean onClusterItemClick(MovieLocation item) {
+                Marker marker = renderer.getMarker(item);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (item.getPoster() == null) {
+                            path = locator.getTMDBfile(item);
+                            item.setPoster(path);
+                        } else {
+                            path = item.getPoster();
+                        }
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                marker.showInfoWindow();
+                            }
+                        });
+                    }
+                }).start();
+                return true;
+            }
+        });
 
         //When a cluster (not a marker) is clicked, show the info window of the cluster
         clusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MovieLocation>() {
@@ -306,11 +336,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        isDismissed = false;
                         //Declaring variables
                         ArrayList<MovieLocation> moviesInCluster;
                         LayoutInflater inflater;
                         View popupView;
-                        PopupWindow popupWindow;
                         GridLayout grid;
                         //Checks if a movie is multiple times in the cluster
                         boolean alreadyAdded = false;
@@ -325,6 +355,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             popupView = inflater.inflate(R.layout.cluster_info_window_layout, null);
                             //Create the popup window
                             popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.WRAP_CONTENT, 375 * 2, true);
+
+                            popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                                @Override
+                                public void onDismiss() {
+                                    isDismissed = true;
+                                }
+                            });
+
                             //Getting the grid layout from the popup window layout
                             grid = popupView.findViewById(R.id.cluster_info_window_layout);
                             //Column count to 4
@@ -427,6 +465,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 //Adding rule to align the number inside the container
                                                 movieContainerParams.addRule(RelativeLayout.ALIGN_TOP, times.getId());
                                                 //Adding the number of instances to the container
+                                                if(isDismissed) {
+                                                    popupWindow.dismiss();
+                                                    popupWindow = null;
+                                                    return;
+                                                }
                                                 movieContainer.addView(times);
                                                 multiple = false;
                                                 count = 1;
@@ -436,9 +479,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             //Adding the container to the layout
                                             grid.addView(movieContainer);
                                             //Showing the popup window on the center of the screen
-                                            popupWindow.showAtLocation(new View(getApplicationContext()), Gravity.CENTER, 0, 0);
+                                            if(isDismissed){
+                                                popupWindow.dismiss();
+                                                popupWindow = null;
+                                                return;
+                                            }
+                                            if(popupWindow != null) {
+                                                popupWindow.showAtLocation(new View(getApplicationContext()), Gravity.CENTER, 0, 0);
+                                            }
                                         }
                                     });
+                                }
+                                if(isDismissed) {
+                                    if(popupWindow != null) {
+                                        popupWindow.dismiss();
+                                        popupWindow = null;
+                                    }
+                                    isDismissed = false;
+                                    return;
                                 }
                                 alreadyAdded = false;
                             }
@@ -489,11 +547,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 if(!mapStyle) {
                     mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getApplicationContext(), R.raw.dark_style));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        getWindow().getDecorView().setSystemUiVisibility(0);
+                    }
+                    RotateAnimation rotate = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                    rotate.setDuration(500);
+                    rotate.setFillAfter(true);
+                    switchMap.startAnimation(rotate);
                     switchMap.setColorFilter(getResources().getColor(R.color.holo_red_dark));
                     mapStyle = true;
                 }
                 else {
                     mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getApplicationContext(), R.raw.light_style));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                    }
+                    RotateAnimation rotate = new RotateAnimation(0, -360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                    rotate.setDuration(500);
+                    rotate.setFillAfter(true);
+                    switchMap.startAnimation(rotate);
                     switchMap.setColorFilter(getResources().getColor(R.color.holo_red_light));
                     mapStyle = false;
                 }
