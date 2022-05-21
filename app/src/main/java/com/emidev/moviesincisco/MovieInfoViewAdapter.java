@@ -2,7 +2,11 @@ package com.emidev.moviesincisco;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,6 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -24,45 +30,20 @@ public class MovieInfoViewAdapter implements GoogleMap.InfoWindowAdapter {
     private final LayoutInflater mInflater;
     private final Locator locator = new Locator();
     private String path = null;
-    private final ClusterManager<MovieLocation> clusterManager;
-    private MovieLocation clickedClusterItem;
+    Context context;
+    MoviesClusterRenderer clusterRenderer;
 
-    public MovieInfoViewAdapter(LayoutInflater inflater, ClusterManager<MovieLocation> click) {
+    public MovieInfoViewAdapter(LayoutInflater inflater, Context context, MoviesClusterRenderer renderer) {
         this.mInflater = inflater;
-        this.clusterManager = click;
+        this.context = context;
+        this.clusterRenderer = renderer;
 
-        clusterManager
-                .setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MovieLocation>() {
-                    @Override
-                    public boolean onClusterItemClick(MovieLocation item) {
-                        clickedClusterItem = item;
-                        return false;
-                    }
-                });
     }
 
     @Override
     public View getInfoWindow(@NonNull Marker marker) {
         final View popup = mInflater.inflate(R.layout.info_window_layout, null);
-        ImageView poster = popup.findViewById(R.id.info_window_image);
-        if(clickedClusterItem.getPoster() == null) {
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    path = locator.getTMDBfile(clickedClusterItem);
-                    clickedClusterItem.setPoster(path);
-                }
-            });
-
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } else {
-            path = clickedClusterItem.getPoster();
-        }
+        MovieLocation item = clusterRenderer.getClusterItem(marker);
         RequestListener<Drawable> req = new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -78,6 +59,8 @@ public class MovieInfoViewAdapter implements GoogleMap.InfoWindowAdapter {
                 return false;
             }
         };
+        ImageView poster = popup.findViewById(R.id.info_window_image);
+        path = item.getPoster();
         if(path != null) {
             Glide.with(popup)
                     .load("https://image.tmdb.org/t/p/original" + path)
@@ -94,7 +77,7 @@ public class MovieInfoViewAdapter implements GoogleMap.InfoWindowAdapter {
                     .transition(withCrossFade())
                     .into(poster);
         }
-        ((TextView) popup.findViewById(R.id.title)).setText(clickedClusterItem.getTitle());
+        ((TextView) popup.findViewById(R.id.title)).setText(item.getTitle());
         return popup;
     }
 
