@@ -59,6 +59,8 @@ public class MovieLocation implements ClusterItem {
         this.latitude = movieLocation.getLatitude();
         this.longitude = movieLocation.getLongitude();
         this.isOverLimit = movieLocation.isOverLimit();
+        this.mainActor = movieLocation.getMainActor();
+        this.poster = movieLocation.getPoster();
     }
 
     @NonNull

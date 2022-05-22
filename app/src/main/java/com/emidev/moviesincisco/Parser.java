@@ -159,7 +159,9 @@ public class Parser {
         for (int i = 0; i < doc.size(); i++) {
             JSONObject movie = (JSONObject) doc.get(i);
             MovieLocation m = new MovieLocation();
-            m.setTitle(trimDash(((String) movie.get("title")).split("Season")[0].trim()));
+            String title = ((String) movie.get("title")).split("Season")[0].trim();
+            title = title.split("episode")[0].trim();
+            m.setTitle(trimDash(title));
 
             if(movie.get("locations") != null) {
                 Log.d("LocationOfJSONFile", (String) movie.get("locations"));

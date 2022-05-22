@@ -110,6 +110,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d("Movies", current.getTitle());
             clusterManager.addItem(current);
         }
+        clusterManager.cluster();
     }
 
     //Function to fade in the app's logo
@@ -347,15 +348,56 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Setting a custom adapter to show a window when a marker is clicked for every marker
         clusterManager.getMarkerCollection().setInfoWindowAdapter(new MovieInfoViewAdapter(LayoutInflater.from(this), this, renderer));
 
+        ProgressBar posterLoading = findViewById(R.id.loadingPoster);
+
         clusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MovieLocation>() {
             @Override
             public boolean onClusterItemClick(MovieLocation item) {
+                posterLoading.setVisibility(View.VISIBLE);
                 Marker marker = renderer.getMarker(item);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         if (item.getPoster() == null) {
                             path = locator.getTMDBfile(item);
+                            if(path == null) {
+                                MovieLocation tmp = new MovieLocation();
+                                tmp = new MovieLocation(item);
+                                String[] titles = tmp.getTitle().split("/");
+                                for (String title : titles) {
+                                    tmp.setTitle(title);
+                                    path = locator.getTMDBfile(tmp);
+                                    if (path != null) {
+                                        break;
+                                    }
+                                }
+                            }
+                            if (path == null) {
+                                MovieLocation tmp = new MovieLocation();
+                                tmp = new MovieLocation(item);
+                                String[] titles = tmp.getTitle().split("(?i)part");
+                                for (String title : titles) {
+                                    Log.d("Search", "Title: " + title);
+                                    tmp.setTitle(title.trim());
+                                    path = locator.getTMDBfile(tmp);
+                                    if (path != null) {
+                                        break;
+                                    }
+                                }
+                            }
+                            if (path == null) {
+                                MovieLocation tmp = new MovieLocation();
+                                tmp = new MovieLocation(item);
+                                String[] titles = tmp.getTitle().split(",");
+                                for (String title : titles) {
+                                    Log.d("Search", "Title: " + title);
+                                    tmp.setTitle(title.trim());
+                                    path = locator.getTMDBfile(tmp);
+                                    if (path != null) {
+                                        break;
+                                    }
+                                }
+                            }
                             item.setPoster(path);
                         } else {
                             path = item.getPoster();
@@ -365,6 +407,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             @Override
                             public void run() {
                                 marker.showInfoWindow();
+                                posterLoading.setVisibility(View.GONE);
                             }
                         });
                     }
@@ -398,7 +441,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
                             popupView = inflater.inflate(R.layout.cluster_info_window_layout, null);
                             //Create the popup window
-                            popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.WRAP_CONTENT, 375 * 2, true);
+                            popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.WRAP_CONTENT, 400 * 2, true);
 
                             popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
                                 @Override
@@ -409,10 +452,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             //Getting the grid layout from the popup window layout
                             grid = popupView.findViewById(R.id.cluster_info_window_layout);
-                            //Column count to 4
-                            grid.setColumnCount(4);
-                            //Column rows to fit the number of movies in the cluster
-                            grid.setRowCount(moviesInCluster.size() / 4 + 1);
+
+                            if(moviesInCluster.size() <= 4) {
+                                grid.setColumnCount(2);
+                                grid.setRowCount(1);
+                            } else if (moviesInCluster.size() <= 6) {
+                                grid.setColumnCount(3);
+                                grid.setRowCount(2);
+                            } else {
+                                //Column count to 4
+                                grid.setColumnCount(3);
+                                //Column rows to fit the number of movies in the cluster
+                                grid.setRowCount(moviesInCluster.size() / 3 + 1);
+                            }
                             //For each movie in the cluster
                             for (int i = 0; i < moviesInCluster.size(); i++) {
                                 //Check if the movie was already added to the grid
@@ -446,14 +498,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     movieContainer = new RelativeLayout(getApplicationContext());
                                     //Setting the layout parameters for the movie container
                                     movieContainerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                                    movieContainer.setLayoutParams(new LinearLayout.LayoutParams(250, LinearLayout.LayoutParams.WRAP_CONTENT));
+                                    movieContainer.setLayoutParams(new LinearLayout.LayoutParams(300, LinearLayout.LayoutParams.WRAP_CONTENT));
                                     movieContainer.setGravity(Gravity.CENTER);
 
                                     //TextView to contain the movie title
                                     movieTitle = new TextView(getApplicationContext());
                                     //Setting the layout parameters for the movie title
-                                    movieTitleParams = new LinearLayout.LayoutParams(250, LinearLayout.LayoutParams.WRAP_CONTENT);
-                                    movieTitleParams.setMargins(0,375,0,0);
+                                    movieTitleParams = new LinearLayout.LayoutParams(300, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                    movieTitleParams.setMargins(0,450,0,0);
                                     movieTitle.setLayoutParams(movieTitleParams);
                                     movieTitle.setText(moviesInCluster.get(i).getTitle());
                                     movieTitle.setTypeface(null, Typeface.BOLD);
@@ -464,7 +516,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                     //Creating the movie poster to add to the movie container
                                     moviePoster = new ImageView(getApplicationContext());
-                                    moviePoster.setLayoutParams(new LinearLayout.LayoutParams(250, 375));
+                                    moviePoster.setLayoutParams(new LinearLayout.LayoutParams(300, 450));
                                     moviePoster.setPadding(5, 5, 5, 5);
                                     moviePoster.setScaleType(ImageView.ScaleType.FIT_CENTER);
                                     moviePoster.setAdjustViewBounds(true);
@@ -496,7 +548,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                                 //Setting the layout parameters for the number of instances
                                                 timesParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                                                timesParams.setMargins(10,290,0,0);
+                                                timesParams.setMargins(20,360,0,0);
                                                 times.setPadding(10, 5, 10, 5);
                                                 times.setLayoutParams(timesParams);
                                                 times.setText(String.format(getResources().getString(R.string.times), count));
