@@ -6,5 +6,5 @@
     <string name="locations_lost">Locations lost:&#160;</string>
     <string name="onetime">This is a one time process.</string>
     <string name="wait">Please, wait.</string>
-    <string name="times">%d X</string>
+    <string name="times">%dX</string>
 </resources>

@@ -319,6 +319,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Setting up the map clusterer
         setUpClusterer();
 
+        mMap.setPadding(20, 280, 0, 0);
+
         SearchView searchView = findViewById(R.id.searchView);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -403,11 +405,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             path = item.getPoster();
                         }
 
+                        Log.d("Heart and Souls", "Path: " + path);
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 marker.showInfoWindow();
                                 posterLoading.setVisibility(View.GONE);
+                                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), mMap.getCameraPosition().zoom));
                             }
                         });
                     }
@@ -441,7 +446,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
                             popupView = inflater.inflate(R.layout.cluster_info_window_layout, null);
                             //Create the popup window
-                            popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.WRAP_CONTENT, 400 * 2, true);
+                            popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
 
                             popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
                                 @Override
@@ -460,6 +465,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 grid.setColumnCount(3);
                                 grid.setRowCount(2);
                             } else {
+                                popupWindow.setHeight(1200);
                                 //Column count to 4
                                 grid.setColumnCount(3);
                                 //Column rows to fit the number of movies in the cluster
@@ -517,7 +523,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     //Creating the movie poster to add to the movie container
                                     moviePoster = new ImageView(getApplicationContext());
                                     moviePoster.setLayoutParams(new LinearLayout.LayoutParams(300, 450));
-                                    moviePoster.setPadding(5, 5, 5, 5);
+                                    //moviePoster.setPadding(5, 5, 5, 5);
                                     moviePoster.setScaleType(ImageView.ScaleType.FIT_CENTER);
                                     moviePoster.setAdjustViewBounds(true);
 

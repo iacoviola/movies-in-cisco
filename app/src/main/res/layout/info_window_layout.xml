@@ -11,6 +11,7 @@
         android:id="@+id/info_window_image"
         android:layout_width="100dp"
         android:layout_height="150dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_baseline_local_movies_24"/>
 
     <TextView

@@ -95,6 +95,7 @@ public class Parser {
         for(int i = 0; i < results.size(); i++) {
             JSONObject movieEntry = (JSONObject) results.get(i);
             long id = (long) movieEntry.get("id");
+            Log.d("Main actor", movie.getMainActor());
             if(locator.checkCredits(movie, id)){
                 path = (String) movieEntry.get("poster_path");
                 break;
