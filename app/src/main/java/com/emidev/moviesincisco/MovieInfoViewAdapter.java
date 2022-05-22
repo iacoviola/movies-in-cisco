@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -62,6 +63,8 @@ public class MovieInfoViewAdapter implements GoogleMap.InfoWindowAdapter {
         ImageView poster = popup.findViewById(R.id.info_window_image);
         path = item.getPoster();
         if(path != null) {
+            Log.d("Title", item.getTitle());
+            Log.d("Path", "https://image.tmdb.org/t/p/original" + path);
             Glide.with(popup)
                     .load("https://image.tmdb.org/t/p/original" + path)
                     .placeholder(R.drawable.ic_baseline_local_movies_24)
