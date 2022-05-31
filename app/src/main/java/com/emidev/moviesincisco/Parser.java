@@ -113,7 +113,6 @@ public class Parser {
         Log.d("doc", doc.toString());
         String status = (String) doc.get("status");
         if(status.equals("OVER_QUERY_LIMIT")) {
-            movie.setOverLimit(true);
             movie.setLatitude(0.0);
             movie.setLongitude(0.0);
 
@@ -142,7 +141,6 @@ public class Parser {
                 Log.d("Lat", String.valueOf(location.get("lat")));
                 movie.setLatitude((Double) location.get("lat"));
                 movie.setLongitude((Double) location.get("lng"));
-                movie.setOverLimit(false);
                 query.insert(movie);
             } else {
                 movie.setLatitude(0.0);
@@ -161,14 +159,40 @@ public class Parser {
             String title;
             JSONObject movie = (JSONObject) doc.get(i);
             MovieLocation m = new MovieLocation();
+            m.setTVShow(false);
+            String splitTmp[];
             title = ((String) movie.get("title"));
             if(title.equalsIgnoreCase("Cardinal X")){
                 Log.d("Cardinal", title);
                 title = "MDMA";
             } else {
-                title = title.split("Season")[0].trim();
-                title = title.split("episode")[0].trim();
-                trimDash(title);
+
+                if(title.contains("Looking")){
+                    Log.d("Looking season", title);
+                }
+
+                splitTmp = title.split("(?i)Season");
+                if (splitTmp.length > 1) {
+                    title = splitTmp[0].trim();
+                    if(title.contains("Looking")) {
+                        Log.d("Season", "in");
+                    }
+                    m.setTVShow(true);
+                }
+
+                splitTmp = title.split("(?i)episode");
+                if (splitTmp.length > 1) {
+                    title = splitTmp[0].trim();
+                    if(title.contains("Looking")) {
+                        Log.d("episode", "in");
+                    }
+                    m.setTVShow(true);
+                }
+
+                splitTmp = title.split("(?i)\"Special\"");
+                title = splitTmp[0].trim();
+
+                title = trimDash(title).trim();
             }
             m.setTitle(title);
 
@@ -182,6 +206,9 @@ public class Parser {
                 m.setDirector(((String) movie.get("director")).split("/")[0]);
                 m.setWriter((String) movie.get("writer"));
                 m.setMainActor((String) movie.get("actor_1"));
+                if(title.contains("Looking")) {
+                    m.setTVShow(true);
+                }
                 movies.add(m);
             }
         }

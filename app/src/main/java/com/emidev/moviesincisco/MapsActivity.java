@@ -291,11 +291,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-        //Changing the map style to remove useless elements
-        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.light_style));
 
+        SharedPreferences sharedPreferences = getSharedPreferences("mapStyle", MODE_PRIVATE);
         ImageButton switchMap = findViewById(R.id.switchButton);
-        switchMap.setColorFilter(getResources().getColor(R.color.holo_red_light));
+        //Changing the map style to remove useless elements
+        if (!sharedPreferences.getBoolean("mapStyle", false)) {
+            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.light_style));
+            switchMap.setColorFilter(getResources().getColor(R.color.holo_red_light));
+        } else {
+            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.dark_style));
+            switchMap.setColorFilter(getResources().getColor(R.color.holo_red_dark));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
+        }
         //Creating bounds for the map, to lock the camera
         //Over the bay area
         LatLngBounds sanFrancisco = new LatLngBounds(new LatLng(37.1398299, -122.873825), new LatLng(38.4298239, -121.98178));
@@ -361,14 +370,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void run() {
                         if (item.getPoster() == null) {
-                            path = locator.getTMDBfile(item);
+                            Log.d("isItATVShow", String.valueOf(item.getTVShow()));
+                            if(item.getTVShow()){
+                                path = locator.getTMDBtv(item);
+                            } else {
+                                path = locator.getTMDBfile(item);
+                            }
                             if(path == null) {
                                 MovieLocation tmp = new MovieLocation();
                                 tmp = new MovieLocation(item);
                                 String[] titles = tmp.getTitle().split("/");
                                 for (String title : titles) {
                                     tmp.setTitle(title);
-                                    path = locator.getTMDBfile(tmp);
+                                    if(item.getTVShow()){
+                                        path = locator.getTMDBtv(item);
+                                    } else {
+                                        path = locator.getTMDBfile(item);
+                                    }
                                     if (path != null) {
                                         break;
                                     }
@@ -381,7 +399,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 for (String title : titles) {
                                     Log.d("Search", "Title: " + title);
                                     tmp.setTitle(title.trim());
-                                    path = locator.getTMDBfile(tmp);
+                                    if(item.getTVShow()){
+                                        path = locator.getTMDBtv(item);
+                                    } else {
+                                        path = locator.getTMDBfile(item);
+                                    }
                                     if (path != null) {
                                         break;
                                     }
@@ -394,7 +416,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 for (String title : titles) {
                                     Log.d("Search", "Title: " + title);
                                     tmp.setTitle(title.trim());
-                                    path = locator.getTMDBfile(tmp);
+                                    if(item.getTVShow()){
+                                        path = locator.getTMDBtv(item);
+                                    } else {
+                                        path = locator.getTMDBfile(item);
+                                    }
                                     if (path != null) {
                                         break;
                                     }
@@ -657,6 +683,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     rotate.setFillAfter(true);
                     switchMap.startAnimation(rotate);
                     switchMap.setColorFilter(getResources().getColor(R.color.holo_red_dark));
+                    sharedPreferences.edit().putBoolean("mapStyle", true);
                     mapStyle = true;
                 }
                 else {
@@ -669,6 +696,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     rotate.setFillAfter(true);
                     switchMap.startAnimation(rotate);
                     switchMap.setColorFilter(getResources().getColor(R.color.holo_red_light));
+                    sharedPreferences.edit().putBoolean("mapStyle", false);
                     mapStyle = false;
                 }
             }

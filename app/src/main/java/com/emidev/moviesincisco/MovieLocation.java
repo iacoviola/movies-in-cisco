@@ -39,7 +39,8 @@ public class MovieLocation implements ClusterItem {
     private String poster;
     @ColumnInfo(name = "main_actor")
     private String mainActor;
-    private boolean isOverLimit;
+    @ColumnInfo(name = "is_show")
+    private boolean isTVShow;
 
     public MovieLocation() {
         this.poster = null;
@@ -58,7 +59,7 @@ public class MovieLocation implements ClusterItem {
         this.writer = movieLocation.getWriter();
         this.latitude = movieLocation.getLatitude();
         this.longitude = movieLocation.getLongitude();
-        this.isOverLimit = movieLocation.isOverLimit();
+        this.isTVShow = movieLocation.getTVShow();
         this.mainActor = movieLocation.getMainActor();
         this.poster = movieLocation.getPoster();
     }
@@ -179,12 +180,12 @@ public class MovieLocation implements ClusterItem {
         this.mainActor = mainActor;
     }
 
-    public boolean isOverLimit() {
-        return isOverLimit;
+    public boolean getTVShow() {
+        return isTVShow;
     }
 
-    public void setOverLimit(boolean overLimit) {
-        isOverLimit = overLimit;
+    public void setTVShow(boolean isTVShow) {
+        this.isTVShow = isTVShow;
     }
 
     @NonNull

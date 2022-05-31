@@ -60,12 +60,12 @@ public class MoviesClusterRenderer extends DefaultClusterRenderer<MovieLocation>
         super.onBeforeClusterItemRendered(item, markerOptions);
     }
 
-    @Override
+    /*@Override
     protected void onBeforeClusterRendered(Cluster<MovieLocation> cluster, MarkerOptions markerOptions) {
         iconGenerator.setBackground(ContextCompat.getDrawable(context, R.drawable.cluster_icon_small));
         //set icon number
         iconGenerator.makeIcon(String.valueOf(cluster.getSize()));
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon()));
         //markerOptions.icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.cluster_icon), 100, 100, false)));
-    }
+    }*/
 }

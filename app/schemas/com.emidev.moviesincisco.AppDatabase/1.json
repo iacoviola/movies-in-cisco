@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a9f79d5e57813aa83f674f4c2991add1",
+    "identityHash": "9dd68a50a8de8e6fd767b7e60c626f59",
     "entities": [
       {
         "tableName": "movie_location",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `year` INTEGER NOT NULL, `location` TEXT, `funFact` TEXT, `production` TEXT, `distributor` TEXT, `director` TEXT, `writer` TEXT, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `poster` TEXT, `main_actor` TEXT, `isOverLimit` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `year` INTEGER NOT NULL, `location` TEXT, `funFact` TEXT, `production` TEXT, `distributor` TEXT, `director` TEXT, `writer` TEXT, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `poster` TEXT, `main_actor` TEXT, `is_show` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -87,8 +87,8 @@
             "notNull": false
           },
           {
-            "fieldPath": "isOverLimit",
-            "columnName": "isOverLimit",
+            "fieldPath": "isTVShow",
+            "columnName": "is_show",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -106,7 +106,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a9f79d5e57813aa83f674f4c2991add1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9dd68a50a8de8e6fd767b7e60c626f59')"
     ]
   }
 }
