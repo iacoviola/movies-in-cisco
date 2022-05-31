@@ -2,6 +2,7 @@ package com.emidev.moviesincisco;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
@@ -14,14 +15,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.util.Objects;
 
 public class MoviesClusterRenderer extends DefaultClusterRenderer<MovieLocation> {
     Context context;
 
+    private final IconGenerator iconGenerator;
+
     public MoviesClusterRenderer(Context context, GoogleMap map, ClusterManager<MovieLocation> clusterManager) {
         super(context, map, clusterManager);
+        iconGenerator = new IconGenerator(context);
         this.context = context;
     }
 
@@ -53,5 +58,14 @@ public class MoviesClusterRenderer extends DefaultClusterRenderer<MovieLocation>
         markerOptions.snippet(item.getSnippet());
         markerOptions.title(item.getTitle());
         super.onBeforeClusterItemRendered(item, markerOptions);
+    }
+
+    @Override
+    protected void onBeforeClusterRendered(Cluster<MovieLocation> cluster, MarkerOptions markerOptions) {
+        iconGenerator.setBackground(ContextCompat.getDrawable(context, R.drawable.cluster_icon_small));
+        //set icon number
+        iconGenerator.makeIcon(String.valueOf(cluster.getSize()));
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon()));
+        //markerOptions.icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.cluster_icon), 100, 100, false)));
     }
 }

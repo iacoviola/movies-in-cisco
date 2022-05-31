@@ -56,7 +56,7 @@ public class Parser {
         for(int i = 0; i < results.size(); i++) {
             JSONObject movieEntry = (JSONObject) results.get(i);
             String name = (String) movieEntry.get("name");
-            if(name.equalsIgnoreCase(movie.getMainActor())) {
+            if(name.equalsIgnoreCase(movie.getMainActor()) || name.contains(movie.getMainActor())) {
                 return true;
             }
         }
@@ -158,11 +158,19 @@ public class Parser {
         Log.d("doc", doc.toString());
 
         for (int i = 0; i < doc.size(); i++) {
+            String title;
             JSONObject movie = (JSONObject) doc.get(i);
             MovieLocation m = new MovieLocation();
-            String title = ((String) movie.get("title")).split("Season")[0].trim();
-            title = title.split("episode")[0].trim();
-            m.setTitle(trimDash(title));
+            title = ((String) movie.get("title"));
+            if(title.equalsIgnoreCase("Cardinal X")){
+                Log.d("Cardinal", title);
+                title = "MDMA";
+            } else {
+                title = title.split("Season")[0].trim();
+                title = title.split("episode")[0].trim();
+                trimDash(title);
+            }
+            m.setTitle(title);
 
             if(movie.get("locations") != null) {
                 Log.d("LocationOfJSONFile", (String) movie.get("locations"));
